@@ -3,13 +3,13 @@ package myweb
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cubesatplatform/webserver/webserver/mydb"
+	ir "github.com/cubesatplatform/webserver/webserver/myimagemaker"
 	"image/png"
 	"io"
 	"net/http"
 	"os"
 	"time"
-	"webserver/mydb"
-	ir "webserver/myimagemaker"
 )
 
 func pageTime(w http.ResponseWriter, r *http.Request) {
