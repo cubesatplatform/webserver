@@ -5,8 +5,8 @@ package mydb
 import (
 	"database/sql"
 	"fmt"
+	"github.com/cubesatplatform/webserver/webserver/constants"
 	s "strings"
-	"webserver/constants"
 
 	_ "github.com/lib/pq"
 )

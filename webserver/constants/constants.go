@@ -11,14 +11,14 @@ type Request struct {
 }
 
 type Commands struct {
-	Id      string    `json:"ID"`
-	BSid    string    `json:"BID"`
-	Data    string    `json:"DATA"`
-	Sent    string    `json:"SENT"`
-	Ack     string    `json:"ACK"`
-	NeedAck string    `json:"NEEDACK"`
-	Sendon  time.Time `json:"SENDON"`
-	Ts      time.Time `json:"TS"`
+	Id      string    `json:"id"`
+	BSid    string    `json:"bid"`
+	Data    string    `json:"data"`
+	Sent    string    `json:"sent"`
+	Ack     string    `json:"ack"`
+	NeedAck string    `json:"needack"`
+	Sendon  time.Time `json:"sendon"`
+	Ts      time.Time `json:"ts"`
 }
 
 type SatData struct {
