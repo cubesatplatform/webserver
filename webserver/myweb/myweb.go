@@ -3,13 +3,13 @@ package myweb
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cubesatplatform/webserver/webserver/mydb"
-	ir "github.com/cubesatplatform/webserver/webserver/myimagemaker"
 	"image/png"
 	"io"
 	"net/http"
 	"os"
 	"time"
+	"webserver/mydb"
+	ir "webserver/myimagemaker"
 )
 
 func pageTime(w http.ResponseWriter, r *http.Request) {
@@ -222,12 +222,11 @@ func pageGetIRImage(w http.ResponseWriter, r *http.Request) {
 	//new_png_file := "./upload/chessboard.png" // output image lives here
 	values := r.URL.Query()
 	filename := values.Get("filename")
-	block := values.Get("block")
 
-	data := mydb.GetImage(filename, block)
+	data := mydb.GetLastImage(filename)
 
 	fmt.Println(filename)
-	fmt.Println(block)
+
 	fmt.Println(len(data))
 
 	for i := 0; i < len(data); i++ {
@@ -287,19 +286,24 @@ func ListenWeb() {
 
 	// And add it to the ServeMux.
 	mux.Handle("/time", http.HandlerFunc(pageTime))
-	mux.Handle("/register", http.HandlerFunc(pageRegister))
-	mux.Handle("/insert", http.HandlerFunc(pageInsert))
-	mux.Handle("/insertmulti", http.HandlerFunc(pageInsertMulti))
-	//mux.Handle("/insertimagename", http.HandlerFunc(pageInsertImageName))
-	mux.Handle("/query", http.HandlerFunc(pageQuery))
-	mux.Handle("/insertcmd", http.HandlerFunc(pageInsertCmd))
-	mux.Handle("/getcmd", http.HandlerFunc(pageGetCmd))
+	mux.Handle("/register", http.HandlerFunc(pageRegister))       //
+	mux.Handle("/insert", http.HandlerFunc(pageInsert))           //
+	mux.Handle("/insertmulti", http.HandlerFunc(pageInsertMulti)) //
+	mux.Handle("/query", http.HandlerFunc(pageQuery))             //
+	mux.Handle("/insertcmd", http.HandlerFunc(pageInsertCmd))     //
+	mux.Handle("/getcmd", http.HandlerFunc(pageGetCmd))           //
 	mux.Handle("/getgps", http.HandlerFunc(pageGetGPS))
 	mux.Handle("/getmsg", http.HandlerFunc(pageGetMSG))
-	mux.Handle("/updatecmd", http.HandlerFunc(pageUpdateCmd))
+	mux.Handle("/updatecmd", http.HandlerFunc(pageUpdateCmd)) //
 
-	mux.Handle("/image", http.HandlerFunc(pageGetImage))
-	mux.Handle("/irimage", http.HandlerFunc(pageGetIRImage))
+	mux.Handle("/image", http.HandlerFunc(pageGetImage))     //
+	mux.Handle("/irimage", http.HandlerFunc(pageGetIRImage)) //
 
 	http.ListenAndServe(":80", mux)
 }
+
+//http://192.168.86.148/image?filename=img17&block=229
+//http://192.168.86.148/irimage?filename=IRZ1
+//http://192.168.86.148/query?NAME=SATINFO&KEY=TEMPOBC
+
+//http://192.168.86.148/insertcmd?BSID=&DATA=&SENDON
