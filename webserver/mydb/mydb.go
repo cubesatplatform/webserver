@@ -5,8 +5,8 @@ package mydb
 import (
 	"database/sql"
 	"fmt"
-	"github.com/cubesatplatform/webserver/webserver/constants"
 	s "strings"
+	"webserver/constants"
 
 	_ "github.com/lib/pq"
 )
@@ -179,7 +179,9 @@ func InsertImagePart(filename string, val []byte) {
 	pos := s.Index(str, "_")
 
 	part := str[len(str)-1:]
-	filename = str[0:pos]
+	if pos > 0 {
+		filename = str[0:pos]
+	}
 	block := str[pos+1 : len(str)-1]
 
 	//need to split filename into components
@@ -232,6 +234,41 @@ func Register() (myrows []constants.Stations) {
 func GetImage(filename, block string) (image []byte) {
 	//encode(coalesce(part0, '')||coalesce(part1, '')||coalesce(part2, ''), 'escape')as image    //This is turn it into txt to see in sql
 	sqlStatement := fmt.Sprintf(" select filename, block, part, data from satimages where filename='%s' and block='%s' and block!='_' order by  part asc limit 4", filename, block)
+	fmt.Println(sqlStatement)
+	rows, err := DB.Query(sqlStatement)
+	if err != nil {
+		fmt.Errorf("cannot run query %s: %w", sqlStatement, err)
+		return
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		satimg := constants.SatImages{}
+		//err = rows.Scan(&satimg.Id, &satimg.Filename, &satimg.Block, &satimg.Parts, &satimg.Totalblocks, &satimg.Width, &satimg.Ts, &satimg.Part0, &satimg.Part1, &satimg.Part2, &satimg.Part3, &satimg.Part4)
+		err = rows.Scan(&satimg.Filename, &satimg.Block, &satimg.Part, &satimg.Data)
+
+		if err != nil {
+			fmt.Println("Error in GetImage")
+			panic(err)
+		}
+		//fmt.Println(satimg)
+
+		image = append(image, satimg.Data...)
+
+	}
+	// get any error encountered during iteration
+	err = rows.Err()
+	if err != nil {
+		fmt.Errorf("cannot run getImage")
+	}
+
+	//return rows.Err()
+	return
+}
+
+func GetLastImage(filename string) (image []byte) {
+	//encode(coalesce(part0, '')||coalesce(part1, '')||coalesce(part2, ''), 'escape')as image    //This is turn it into txt to see in sql
+	sqlStatement := fmt.Sprintf(" select filename, block, part, data from satimages where filename  in(select filename from satimages where filename like '%s%%' order by ts desc limit 1)  order by  part asc limit 4", filename)
 	fmt.Println(sqlStatement)
 	rows, err := DB.Query(sqlStatement)
 	if err != nil {
